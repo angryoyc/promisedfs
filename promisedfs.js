@@ -16,7 +16,7 @@ exports.exists=function(path){
 	});
 };
 
-exports.unlink function(path){
+exports.unlink=function(path){
 	return new RSVP.Promise(function(resolve, reject){
 		fs.unlink(path, function(err){
 			if(err){
