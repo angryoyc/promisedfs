@@ -8,7 +8,7 @@
 var fs = require('fs');
 var RSVP = require('rsvp');
 
-exports.exists=function(path){
+var exists=exports.exists=function(path){
 	return new RSVP.Promise(function(resolve, reject){
 		fs.exists(path, function(exist){
 			resolve(exist);
@@ -16,7 +16,7 @@ exports.exists=function(path){
 	});
 };
 
-exports.stat=function stat(path){
+var stat=exports.stat=function(path){
 	return new RSVP.Promise(function(resolve, reject){
 		fs.stat(path, function(stats){
 			resolve(stats);
@@ -24,7 +24,7 @@ exports.stat=function stat(path){
 	});
 };
 
-exports.unlink=function unlink(path){
+var unlink=exports.unlink=function(path){
 	return new RSVP.Promise(function(resolve, reject){
 		fs.unlink(path, function(err){
 			if(err){
@@ -36,7 +36,7 @@ exports.unlink=function unlink(path){
 	});
 };
 
-exports.rmdir=function rm(path){
+var rmdir=exports.rmdir=function(path){
 	return new RSVP.Promise(function(resolve, reject){
 		return readdir(path)
 		.then(function(files){
@@ -50,7 +50,7 @@ exports.rmdir=function rm(path){
 	});
 };
 
-exports.rm=function rm(path){
+var rm=exports.rm=function (path){
 	return new RSVP.Promise(function(resolve, reject){
 		return stat(path)
 		.then(function(stats){
@@ -63,7 +63,7 @@ exports.rm=function rm(path){
 	});
 };
 
-exports.readdir=function readdir(path){
+var readdir=exports.readdir=function (path){
 	return new RSVP.Promise(function(resolve, reject){
 		fs.readdir(path, function(err, files){
 			if(err){
