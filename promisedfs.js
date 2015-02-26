@@ -17,9 +17,14 @@ var exists=exports.exists=function(path){
 };
 
 var stat=exports.stat=function(path){
+	console.log('stat', path);
 	return new RSVP.Promise(function(resolve, reject){
-		fs.stat(path, function(stats){
-			resolve(stats);
+		fs.stat(path, function(err, stats){
+			if(err){
+				reject(err);
+			}else{
+				resolve(stats);
+			};
 		});
 	});
 };
@@ -30,7 +35,7 @@ var unlink=exports.unlink=function(path){
 			if(err){
 				reject(err);
 			}else{
-				resolve(true);
+				resolve(path);
 			};
 		});
 	});
@@ -38,28 +43,63 @@ var unlink=exports.unlink=function(path){
 
 var rmdir=exports.rmdir=function(path){
 	return new RSVP.Promise(function(resolve, reject){
-		return readdir(path)
-		.then(function(files){
-			var promises=files.map(function(file){
-				return rm(path + '/' +file);
-			});
-			RSVP.all(promises).then(function(posts){
-				resolve();
-			});
-		})
+		readdir(path)
+		.then(
+			function(files){
+				var promises=files.map(function(file){
+					return rm(path + '/' +file);
+				});
+				console.log('all promises');
+				RSVP.all(promises).then(function(posts){
+					console.log('all promises results', posts);
+					fs.rmdir(path, function(err){
+						if(err){
+							reject(err);
+						}else{
+							resolve(path);
+						};
+					});
+				});
+			},
+			function(err){
+				reject(err);
+			}
+		).catch(function(reason){reject(reason);});
 	});
 };
 
 var rm=exports.rm=function (path){
+	console.log('rm', path);
 	return new RSVP.Promise(function(resolve, reject){
-		return stat(path)
-		.then(function(stats){
-			if(stats.isDirectory()){
-				return rmdir(path);
-			}else{
-				return unlink(path);
-			};
-		});
+		stat(path)
+		.then(
+			function(stats){
+				if(stats.isDirectory()){
+					rmdir(path)
+					.then(
+						function(result){
+							resolve(result);
+						},
+						function(err){
+							reject(err);
+						}
+					);
+				}else{
+					unlink(path)
+					.then(
+						function(result){
+							resolve(result);
+						},
+						function(err){
+							reject(err);
+						}
+					);
+				};
+			},
+			function(err){
+				reject(err);
+			}
+		).catch(function(reason){reject(reason);});
 	});
 };
 
