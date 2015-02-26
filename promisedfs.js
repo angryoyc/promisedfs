@@ -8,27 +8,33 @@
 var fs = require('fs');
 var RSVP = require('rsvp');
 
+/**
+ * Проверка наличия элемента файловой системы.
+ * @param  {string} path  Пусть к элементу файловой системы
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - true|false  в зависимости от результата проверки.
+ */
 var exists=exports.exists=function(path){
 	return new RSVP.Promise(function(resolve, reject){
-		fs.exists(path, function(exist){
-			resolve(exist);
-		});
+		fs.exists(path, resolve);
 	});
 };
 
+/**
+ * Сведения об элементе файловой системы
+ * @param  {string} path  Пусть к элементу файловой системы
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - объект stats
+ */
 var stat=exports.stat=function(path){
-	console.log('stat', path);
 	return new RSVP.Promise(function(resolve, reject){
-		fs.stat(path, function(err, stats){
-			if(err){
-				reject(err);
-			}else{
-				resolve(stats);
-			};
-		});
+		fs.stat(path, getStdHandler(resolve, reject));
 	});
 };
 
+/**
+ * Удаления файла.
+ * @param  {string} path  Путь к файлу
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - список удалённых элементов
+ */
 var unlink=exports.unlink=function(path){
 	return new RSVP.Promise(function(resolve, reject){
 		fs.unlink(path, function(err){
@@ -38,9 +44,15 @@ var unlink=exports.unlink=function(path){
 				resolve(path);
 			};
 		});
+
 	});
 };
 
+/**
+ * Удаление папки со всеми его дочерними элементами. Быстро, на сколько только можно
+ * @param  {string} path  Путь к папке, которую будем удалять
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - список удалённых элементов
+ */
 var rmdir=exports.rmdir=function(path){
 	return new RSVP.Promise(function(resolve, reject){
 		readdir(path)
@@ -49,68 +61,78 @@ var rmdir=exports.rmdir=function(path){
 				var promises=files.map(function(file){
 					return rm(path + '/' +file);
 				});
-				console.log('all promises');
 				RSVP.all(promises).then(function(posts){
-					console.log('all promises results', posts);
 					fs.rmdir(path, function(err){
 						if(err){
 							reject(err);
 						}else{
-							resolve(path);
+							var result=[];
+							posts.forEach(function(post){
+								post.forEach(function(item){
+									result.push(item);
+								})
+							})
+							result.push(path);
+							resolve(result);
 						};
 					});
 				});
 			},
-			function(err){
-				reject(err);
-			}
-		).catch(function(reason){reject(reason);});
+			reject
+		).catch(reject);
 	});
 };
 
+/**
+ * Удаление элемента файловой системы со всеми его дочерними элементами. Медленно.
+ * @param  {string} path  Путь к элементам папки, который будем удалять
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - список удалённых элементов
+ */
 var rm=exports.rm=function (path){
-	console.log('rm', path);
 	return new RSVP.Promise(function(resolve, reject){
 		stat(path)
 		.then(
 			function(stats){
 				if(stats.isDirectory()){
-					rmdir(path)
-					.then(
-						function(result){
-							resolve(result);
-						},
-						function(err){
-							reject(err);
-						}
-					);
+					rmdir(path).then(resolve, reject);
 				}else{
 					unlink(path)
 					.then(
 						function(result){
-							resolve(result);
+							resolve([result]);
 						},
-						function(err){
-							reject(err);
-						}
+						reject
 					);
 				};
 			},
-			function(err){
-				reject(err);
-			}
-		).catch(function(reason){reject(reason);});
+			reject
+		).catch(reject);
 	});
 };
 
+/**
+ * Чтение списка элементов директории
+ * @param  {string} path  Путь к папке, которую будем читать
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - список прочитанных элементов.
+ */
 var readdir=exports.readdir=function (path){
 	return new RSVP.Promise(function(resolve, reject){
-		fs.readdir(path, function(err, files){
-			if(err){
-				reject(err);
-			}else{
-				resolve(files);
-			};
-		});
+		fs.readdir(path, getStdHandler(resolve, reject));
 	});
+};
+
+/**
+ * Получить стандартный обработчик. Стандартная фабрика для генерации стандартного обработчика вызовов fs
+ * @param  {function} resolve  Callback, вызываемый в случае удачи.
+ * @param  {function} reject   Callback, вызываемый в случае ошибки.
+ * @return {function}          Стандартный обработчик.
+ */
+function getStdHandler(resolve, reject){
+	return function(err, result){
+		if(err){
+			reject(err);
+		}else{
+			resolve(result)
+		};
+	};
 };
