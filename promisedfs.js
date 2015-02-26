@@ -28,3 +28,15 @@ exports.unlink=function(path){
 	});
 };
 
+exports.rmdir=function(path){
+	return new RSVP.Promise(function(resolve, reject){
+		fs.rmdir(path, function(err){
+			if(err){
+				reject(err);
+			}else{
+				resolve(true);
+			};
+		});
+	});
+};
+
