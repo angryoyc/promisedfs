@@ -1,0 +1,26 @@
+{
+  "name": "promisedfs",
+  "version": "0.0.1",
+  "description": "Promised wrapper over system fs object",
+  "main": "promisedfs.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://serg@settv.ru:1022/opt/git/promisedfs.git"
+  },
+  "keywords": [
+  ],
+  "dependencies": {
+    "rsvp": "^3.0.14"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.3.0-beta1"
+  },
+  "author": "Serg A. Osipov",
+  "license": "ISC"
+}
