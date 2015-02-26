@@ -16,7 +16,15 @@ exports.exists=function(path){
 	});
 };
 
-exports.unlink=function(path){
+exports.stat=function stat(path){
+	return new RSVP.Promise(function(resolve, reject){
+		fs.stat(path, function(stats){
+			resolve(stats);
+		});
+	});
+};
+
+exports.unlink=function unlink(path){
 	return new RSVP.Promise(function(resolve, reject){
 		fs.unlink(path, function(err){
 			if(err){
@@ -28,15 +36,41 @@ exports.unlink=function(path){
 	});
 };
 
-exports.rmdir=function(path){
+exports.rmdir=function rm(path){
 	return new RSVP.Promise(function(resolve, reject){
-		fs.rmdir(path, function(err){
-			if(err){
-				reject(err);
+		return readdir(path)
+		.then(function(files){
+			var promises=files.map(function(file){
+				return rm(path + '/' +file);
+			});
+			RSVP.all(promises).then(function(posts){
+				resolve();
+			});
+		})
+	});
+};
+
+exports.rm=function rm(path){
+	return new RSVP.Promise(function(resolve, reject){
+		return stat(path)
+		.then(function(stats){
+			if(stats.isDirectory()){
+				return rmdir(path);
 			}else{
-				resolve(true);
+				return unlink(path);
 			};
 		});
 	});
 };
 
+exports.readdir=function readdir(path){
+	return new RSVP.Promise(function(resolve, reject){
+		fs.readdir(path, function(err, files){
+			if(err){
+				reject(err);
+			}else{
+				resolve(files);
+			};
+		});
+	});
+};
