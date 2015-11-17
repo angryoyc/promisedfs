@@ -1,0 +1,29 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "Common web methods",
+  "main": "web.js",
+  "private": true,
+  "scripts": {
+    "test": "mocha test"
+  },
+  "author": "Serg A. Osipov",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "ssh://serg@settv.ru:1022/opt/git/web.git"
+  },
+  "dependencies": {
+    "rsvp": "^3.0.14"
+  },
+  "keywords": [
+    "web",
+    "http"
+  ],
+  "devDependencies": {
+    "jsdoc": "^3.3.0-beta1",
+    "mocha": "^2.2.1",
+    "nock": "^1.1.0",
+    "should": "^5.1.0"
+  }
+}

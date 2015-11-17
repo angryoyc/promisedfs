@@ -6,7 +6,8 @@
  */
 
 var fs = require('fs');
-var RSVP = require('rsvp');
+//var RSVP = require('rsvp');
+var mkdirp = require('mkdirp');
 
 /**
  * Проверка наличия элемента файловой системы.
@@ -14,7 +15,7 @@ var RSVP = require('rsvp');
  * @return {promise}      Promise объект, resolve вызов которого получит результат - true|false  в зависимости от результата проверки.
  */
 var exists=exports.exists=function(path){
-	return new RSVP.Promise(function(resolve, reject){
+	return new Promise(function(resolve, reject){
 		fs.exists(path, resolve);
 	});
 };
@@ -25,10 +26,30 @@ var exists=exports.exists=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - объект stats
  */
 var stat=exports.stat=function(path){
-	return new RSVP.Promise(function(resolve, reject){
+	return new Promise(function(resolve, reject){
 		fs.stat(path, getStdHandler(resolve, reject));
 	});
 };
+
+
+
+/**
+ * Создание указанного пути папок
+ * @param  {string} path  Пусть к элементу файловой системы, возможно не существующий - он будет создан
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - путь к созданной папке
+ */
+var mkdir=exports.mkdir=function(path){
+	return new Promise(function(resolve, reject){
+		mkdirp(path, function(err){
+			if(err){
+				reject(err);
+			}else{
+				resolve(path);
+			};
+		});
+	});
+};
+
 
 /**
  * Удаления файла.
@@ -36,7 +57,7 @@ var stat=exports.stat=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - список удалённых элементов
  */
 var unlink=exports.unlink=function(path){
-	return new RSVP.Promise(function(resolve, reject){
+	return new Promise(function(resolve, reject){
 		fs.unlink(path, function(err){
 			if(err){
 				reject(err);
@@ -54,14 +75,14 @@ var unlink=exports.unlink=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - список удалённых элементов
  */
 var rmdir=exports.rmdir=function(path){
-	return new RSVP.Promise(function(resolve, reject){
+	return new Promise(function(resolve, reject){
 		readdir(path)
 		.then(
 			function(files){
 				var promises=files.map(function(file){
 					return rm(path + '/' +file);
 				});
-				RSVP.all(promises).then(function(posts){
+				Promise.all(promises).then(function(posts){
 					fs.rmdir(path, function(err){
 						if(err){
 							reject(err);
@@ -89,7 +110,7 @@ var rmdir=exports.rmdir=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - список удалённых элементов
  */
 var rm=exports.rm=function (path){
-	return new RSVP.Promise(function(resolve, reject){
+	return new Promise(function(resolve, reject){
 		stat(path)
 		.then(
 			function(stats){
@@ -116,7 +137,7 @@ var rm=exports.rm=function (path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - список прочитанных элементов.
  */
 var readdir=exports.readdir=function (path){
-	return new RSVP.Promise(function(resolve, reject){
+	return new Promise(function(resolve, reject){
 		fs.readdir(path, getStdHandler(resolve, reject));
 	});
 };
@@ -132,6 +153,9 @@ function getStdHandler(resolve, reject){
 		if(err){
 			reject(err);
 		}else{
+			
+//			console.log(result);
+			
 			resolve(result)
 		};
 	};
