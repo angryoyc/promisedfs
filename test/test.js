@@ -9,6 +9,7 @@ describe('PromisedFS', function(){
 	var dirpath = __dirname + '/files/';
 	var dirpath2 = __dirname + '/files/dir/';
 	var dirpath3 =  dirpath2 + 'dir';
+	var symlink =  dirpath2 + 'symlink';
 	var filepath1 = __dirname + '/files/file';
 	var filepath2 = __dirname + '/files/file2'
 	var filepath3 = __dirname + '/files/file3'
@@ -100,6 +101,21 @@ describe('PromisedFS', function(){
 		})
 	});
 
+	describe('symlink', function(){
+		it('should create simlink and return path to it: ' + symlink, function(done){
+			pfs.symlink(filepath1, symlink)
+			.then(
+				function(ls){
+					ls.should.type('string');
+					ls.should.equal(symlink);
+					done();
+				},
+				function(err){
+					return done(err);
+				}
+			).catch(done);
+		})
+	});
 
 	describe('unlink', function(){
 		it('should remove file and and return it path ' + filepath3, function(done){
@@ -131,7 +147,6 @@ describe('PromisedFS', function(){
 			).catch(done);
 		})
 	});
-
 
 	describe('rm', function(){
 		it('should remove any fs-item and return it\'s pathes ' + filepath4, function(done){

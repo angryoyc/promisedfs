@@ -50,6 +50,24 @@ var mkdir=exports.mkdir=function(path){
 	});
 };
 
+/**
+ * Создание симлинка
+ * @param  {string} filepath  Пусть к элементу файловой системы
+ * @param  {string} linkpath  Пусть к симлинку
+ * @return {promise}          Promise объект, resolve вызов которого получит результат - путь к созданному симлинку
+ */
+var symlink=exports.symlink=function(filepath, linkpath){
+	return new Promise(function(resolve, reject){
+		fs.symlink(filepath, linkpath, function(err){
+			if(err){
+				reject(err);
+			}else{
+				resolve(linkpath);
+			};
+		});
+	});
+};
+
 
 /**
  * Удаления файла.
