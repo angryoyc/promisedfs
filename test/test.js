@@ -92,6 +92,7 @@ describe('PromisedFS', function(){
 			.then(
 				function(ls){
 					ls.should.type('string');
+					ls.should.be.eql(dirpath3);
 					done();
 				},
 				function(err){
