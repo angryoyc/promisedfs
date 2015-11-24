@@ -5,6 +5,7 @@
  * @overview Wrapper for some methods of system fs module with promises
  */
 
+'use strict';
 var fs = require('fs');
 //var RSVP = require('rsvp');
 var mkdirp = require('mkdirp');
