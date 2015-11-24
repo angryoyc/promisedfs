@@ -99,7 +99,44 @@ describe('PromisedFS', function(){
 					return done(err);
 				}
 			).catch(done);
-		})
+		});
+		it('should not create path (path already exist) and return path ' + dirpath2, function(done){
+			pfs.mkdir(dirpath2)
+			.then(
+				function(ls){
+					ls.should.type('string');
+					ls.should.be.eql(dirpath2);
+					done();
+				},
+				function(err){
+					return done(err);
+				}
+			).catch(done);
+		});
+		it('should not create path (file already exist) and return error ' + filepath1, function(done){
+			pfs.mkdir(filepath1)
+			.then(
+				function(ls){
+					done(new Error('Not possible branch'));
+				},
+				function(err){
+					err.should.exist;
+					return done();
+				}
+			).catch(done);
+		});
+		it('should not create path (file in path already exist) and return error ' + filepath1 + '/dir', function(done){
+			pfs.mkdir(filepath1 + '/dir')
+			.then(
+				function(ls){
+					done(new Error('Not possible branch'));
+				},
+				function(err){
+					err.should.exist;
+					return done();
+				}
+			).catch(done);
+		});
 	});
 
 	describe('symlink', function(){

@@ -48,9 +48,19 @@ var mkdir=exports.mkdir=function(path){
 					mkdir(pth.dirname(path))
 					.then(function(){
 						mkdir(path).then(resolve).catch(reject);
+					}, reject).catch(reject);
+				}else if(err.errno === -17){ // уже есть
+					stat(path)
+					.then(function(stats){
+						if(stats.isDirectory()){
+							resolve(path);
+						}else{
+							reject(err);
+						};
 					}).catch(reject);
-				}else if(err.errno === 17){ // уже есть
-					resolve(path);
+				}else{
+					//console.log(err);
+					reject(err);
 				};
 			}else{
 				resolve(path);
