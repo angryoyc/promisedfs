@@ -41,6 +41,9 @@ var stat=exports.stat=function(path){
  */
 var mkdir=exports.mkdir=function(path){
 	return new Promise(function(resolve, reject){
+
+/*
+
 		var pth = require('path');
 		fs.mkdir(path, function(err) {
 			if(err){
@@ -68,7 +71,8 @@ var mkdir=exports.mkdir=function(path){
 			//Manually run the callback since we used our own callback to do all these
 			
 		});
-/*
+*/
+
 		mkdirp(path, function(err){
 			if(err){
 				reject(err);
@@ -76,7 +80,6 @@ var mkdir=exports.mkdir=function(path){
 				resolve(path);
 			};
 		});
-*/
 
 	});
 };
