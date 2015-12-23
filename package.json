@@ -7,15 +7,15 @@
     "test": "test"
   },
   "scripts": {
-     "test": "make test"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
     "url": "ssh://serg@settv.ru:1022/opt/git/promisedfs.git"
   },
-  "keywords": [
-  ],
+  "keywords": [],
   "dependencies": {
+    "mkdirp": "^0.5.1"
   },
   "devDependencies": {
     "mocha": "^2.2.1",
