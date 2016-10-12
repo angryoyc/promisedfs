@@ -175,7 +175,35 @@ describe('PromisedFS', function(){
 					return done(err);
 				}
 			).catch(done);
-		})
+		});
+		it('should return error for not existing file: ' + filepath1+'_notexist', function(done){
+			pfs.md5(filepath1+'_notexist')
+			.then(
+				function(md5){
+					done(new Error('File not exist but resolve function was called'));
+				},
+				function(err){
+					should.exist(err);
+					err.message.should.type('string');
+					err.message.should.equal("Not exists");
+					return done();
+				}
+			).catch(done);
+		});
+		it('should return error for folder: ' + dirpath, function(done){
+			pfs.md5(dirpath)
+			.then(
+				function(md5){
+					done(new Error('Argument is folder but resolve function was called'));
+				},
+				function(err){
+					should.exist(err);
+					err.message.should.type('string');
+					err.message.should.equal("Only files allowed");
+					return done();
+				}
+			).catch(done);
+		});
 	});
 
 	describe('symlink', function(){
