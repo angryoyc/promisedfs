@@ -54,6 +54,96 @@ describe('PromisedFS', function(){
 		})
 	});
 
+	describe('isfile', function(){
+		it('should return true for existing file path ' + filepath1, function(done){
+			pfs.isfile(filepath1)
+			.then(
+				function(res){
+					res.should.type('boolean');
+					res.should.equal(true);
+					done();
+				},
+				function(err){
+					return done(err);
+				}
+			).catch(done);
+		})
+		it('should return error for existing folder path ' + dirpath, function(done){
+			pfs.isfile(dirpath)
+			.then(
+				function(res){
+					done(new Error('Path to folder but not file and resolve function was called'));
+				},
+				function(err){
+					should.exist(err);
+					err.message.should.type('string');
+					err.message.should.equal("Not file");
+					return done();
+				}
+			).catch(done);
+		})
+		it('should return error for not existing file ' + filepath1+'_notexists', function(done){
+			pfs.isfile(filepath1+'_notexists')
+			.then(
+				function(res){
+					done(new Error('Path to not existing file but resolve function was called'));
+				},
+				function(err){
+					should.exist(err);
+					err.message.should.type('string');
+					err.message.should.equal("Not exists");
+					return done();
+				}
+			).catch(done);
+		})
+	});
+
+
+	describe('isfolder', function(){
+		it('should return true for existing folder path ' + dirpath, function(done){
+			pfs.isfolder(dirpath)
+			.then(
+				function(res){
+					res.should.type('boolean');
+					res.should.equal(true);
+					done();
+				},
+				function(err){
+					return done(err);
+				}
+			).catch(done);
+		})
+		it('should return error for existing file path ' + filepath1, function(done){
+			pfs.isfolder(filepath1)
+			.then(
+				function(res){
+					done(new Error('Path to file but not file and resolve function was called'));
+				},
+				function(err){
+					should.exist(err);
+					err.message.should.type('string');
+					err.message.should.equal("Not folder");
+					return done();
+				}
+			).catch(done);
+		})
+		it('should return error for not existing folder ' + dirpath+'_notexists', function(done){
+			pfs.isfolder(dirpath+'_notexists')
+			.then(
+				function(res){
+					done(new Error('Path to not existing folder but resolve function was called'));
+				},
+				function(err){
+					should.exist(err);
+					err.message.should.type('string');
+					err.message.should.equal("Not exists");
+					return done();
+				}
+			).catch(done);
+		})
+	});
+
+
 
 	describe('stat', function(){
 		it('should return stats object with true size for path ' + filepath1, function(done){

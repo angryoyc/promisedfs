@@ -14,8 +14,48 @@ var crypto = require('crypto');
 
 
 /**
+ * Проверка является ли заданный путь, путём к существующуму файлу
+ * @param  {string} path  Предполагаемый путь к файлу
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - true/false
+ */
+var isfile=exports.isfile=function(path){
+	return new Promise(function(resolve, reject){
+		exists(path)
+		.then(function(exist){
+			if(!exist) throw new Error('Not exists');
+			return stat(path);
+		})
+		.then(function(stats){
+			if(!stats.isFile()) throw new Error('Not file');
+			return true;
+		})
+		.then(resolve, reject).catch(reject);
+	});
+};
+
+/**
+ * Проверка является ли заданный путь, путём к существующуму файлу
+ * @param  {string} path  Предполагаемый путь к папке
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - true/false
+ */
+var isfolder=exports.isfolder=function(path){
+	return new Promise(function(resolve, reject){
+		exists(path)
+		.then(function(exist){
+			if(!exist) throw new Error('Not exists');
+			return stat(path);
+		})
+		.then(function(stats){
+			if(!stats.isDirectory()) throw new Error('Not folder');
+			return true;
+		})
+		.then(resolve, reject).catch(reject);
+	});
+};
+
+/**
  * Вычисление md5
- * @param  {string} path  Пусть к файлу
+ * @param  {string} path  Путь к файлу
  * @return {promise}      Promise объект, resolve вызов которого получит результат - md5 указанного файла
  */
 var md5=exports.md5=function(path){
