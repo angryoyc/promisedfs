@@ -1,15 +1,51 @@
 /** @module Promised FS
- * @name media
+ * @name pfs
  * @author Serg A. Osipov
  * @email serg.osipov@gmail.com
- * @overview Wrapper for some methods of system fs module with promises
+ * @overview Wrapper for some useful methods of system fs module with promises
  */
 
 'use strict';
-var fs = require('fs');
-//var RSVP = require('rsvp');
+
+var fs     = require('fs');
 var mkdirp = require('mkdirp');
-var move = require('mv');
+var move   = require('mv');
+var crypto = require('crypto');
+
+
+/**
+ * Вычисление md5
+ * @param  {string} path  Пусть к файлу
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - md5 указанного файла
+ */
+var md5=exports.md5=function(path){
+	return new Promise(function(resolve, reject){
+		exists(path)
+		.then(function(exist){
+			if(!exist) throw new Error('Not exists');
+			return exist;
+		})
+		.then(function(exist){
+			return stat(path)
+		})
+		.then(function(stats){
+			if(!stats.isFile()) throw new Error('Only files allowed');
+			return stats.size;
+		})
+		.then(function(size){
+			return new Promise(function(rlv, rjc){
+				var md5sum = crypto.createHash('md5');
+				var s = fs.ReadStream(path);
+				s.on('error', rjc);
+				s.on('data', function(d) { md5sum.update(d); });
+				s.on('end', function() {
+					rlv(md5sum.digest('hex'));
+				})
+			});
+		})
+		.then(resolve, reject).catch(reject);
+	});
+};
 
 
 /**

@@ -162,6 +162,22 @@ describe('PromisedFS', function(){
 		})
 	});
 
+	describe('md5', function(){
+		it('should return md5 value of file: ' + filepath1, function(done){
+			pfs.md5(filepath1)
+			.then(
+				function(md5){
+					md5.should.type('string');
+					md5.length.should.equal(32);
+					done();
+				},
+				function(err){
+					return done(err);
+				}
+			).catch(done);
+		})
+	});
+
 	describe('symlink', function(){
 		it('should create simlink and return path to it: ' + symlink, function(done){
 			pfs.symlink(filepath1, symlink)
