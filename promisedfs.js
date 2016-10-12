@@ -9,6 +9,8 @@
 var fs = require('fs');
 //var RSVP = require('rsvp');
 var mkdirp = require('mkdirp');
+var move = require('mv');
+
 
 /**
  * Проверка наличия элемента файловой системы.
@@ -195,20 +197,30 @@ var readdir=exports.readdir=function (path){
 };
 
 /**
+ * Перемещение файла
+ * @param  {string} src   Путь и имя файла, который будем перемещать
+ * @param  {string} dst   Новый путь и имя файла в которые будем перемещать
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - новое положение файла (dst).
+ */
+var mv=exports.mv=function (src, dst){
+	return new Promise(function(resolve, reject){
+		move(src, dst, {mkdirp: true}, getStdHandler(resolve, reject, dst));
+	});
+};
+
+
+/**
  * Получить стандартный обработчик. Стандартная фабрика для генерации стандартного обработчика вызовов fs
  * @param  {function} resolve  Callback, вызываемый в случае удачи.
  * @param  {function} reject   Callback, вызываемый в случае ошибки.
  * @return {function}          Стандартный обработчик.
  */
-function getStdHandler(resolve, reject){
+function getStdHandler(resolve, reject, res){
 	return function(err, result){
 		if(err){
 			reject(err);
 		}else{
-			
-//			console.log(result);
-			
-			resolve(result)
+			resolve(result || res);
 		};
 	};
 };

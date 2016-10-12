@@ -14,10 +14,13 @@ describe('PromisedFS', function(){
 	var filepath2 = __dirname + '/files/file2'
 	var filepath3 = __dirname + '/files/file3'
 	var filepath4 = __dirname + '/files/file4'
+	var filepath6 = __dirname + '/files/file6'
+	var filepath7 = __dirname + '/files/file7'
 
 
 	fs.createReadStream(filepath1).pipe(fs.createWriteStream(filepath3));
 	fs.createReadStream(filepath1).pipe(fs.createWriteStream(filepath4));
+	fs.createReadStream(filepath1).pipe(fs.createWriteStream(filepath6));
 	fs.mkdirSync(dirpath2);
 	fs.createReadStream(filepath1).pipe(fs.createWriteStream(dirpath2+'/file5'));
 
@@ -76,7 +79,7 @@ describe('PromisedFS', function(){
 				function(ls){
 					ls.should.type('object');
 					ls.length.should.type('number');
-					ls.length.should.equal(4);
+					ls.length.should.equal(5);
 					done();
 				},
 				function(err){
@@ -120,7 +123,7 @@ describe('PromisedFS', function(){
 					done(new Error('Not possible branch'));
 				},
 				function(err){
-					err.should.exist;
+					should.exist(err);
 					return done();
 				}
 			).catch(done);
@@ -132,11 +135,31 @@ describe('PromisedFS', function(){
 					done(new Error('Not possible branch'));
 				},
 				function(err){
-					err.should.exist;
+					should.exist(err);
 					return done();
 				}
 			).catch(done);
 		});
+	});
+
+
+	describe('mv', function(){
+		it('should move file and return new path: ' + filepath7, function(done){
+			pfs.mv(filepath6, filepath7)
+			.then(
+				function(dst){
+					dst.should.type('string');
+					dst.should.equal(filepath7);
+					pfs.rm(filepath7);
+					done();
+				},
+				function(err){
+					pfs.rm(filepath6);
+					pfs.rm(filepath7);
+					return done(err);
+				}
+			).catch(done);
+		})
 	});
 
 	describe('symlink', function(){
