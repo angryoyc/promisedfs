@@ -19,4 +19,14 @@ make test
 Example
 --------
 ```
+	var pfs = require("promisedfs");
+	pfs.exists('/etc/hosts')
+	.then(
+		function(exist){
+			console.log(exist);
+		},
+		function(err){
+			console.log(err);
+		}
+	)
 ```
