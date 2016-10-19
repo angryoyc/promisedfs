@@ -20,10 +20,10 @@ Example
 --------
 ```
 	var pfs = require("promisedfs");
-	pfs.exists('/etc/hosts')
+	pfs.isfile('/etc/hosts')
 	.then(
-		function(exist){
-			console.log(exist);
+		function(stats){
+			console.log('specified path is existing file' + stats.size);
 		},
 		function(err){
 			console.log(err);
