@@ -33,8 +33,30 @@ var isfile=exports.isfile=function(path){
 	});
 };
 
+
 /**
- * Проверка является ли заданный путь, путём к существующуму файлу
+ * Проверка является ли заданный путь, путём к существуещему файлу-ссылке
+ * @param  {string} path  Предполагаемый путь к файлу
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - true/false
+ */
+var issymlink=exports.symlink=function(path){
+	return new Promise(function(resolve, reject){
+		exists(path)
+		.then(function(exist){
+			if(!exist) throw new Error('Not exists');
+			return lstat(path);
+		})
+		.then(function(stats){
+			if(!stats.isSymbolicLink()) throw new Error('Not symlink');
+			return stats;
+		})
+		.then(resolve, reject).catch(reject);
+	});
+};
+
+
+/**
+ * Проверка является ли заданный путь, путём к сущей директории
  * @param  {string} path  Предполагаемый путь к папке
  * @return {promise}      Promise объект, resolve вызов которого получит результат - true/false
  */
