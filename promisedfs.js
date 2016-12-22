@@ -8,6 +8,7 @@
 'use strict';
 
 var fs     = require('fs');
+var cf     = require('cf');
 var mkdirp = require('mkdirp');
 var move   = require('mv');
 var crypto = require('crypto');
@@ -19,7 +20,8 @@ var crypto = require('crypto');
  * @return {promise}      Promise объект, resolve вызов которого получит результат - true/false
  */
 var isfile=exports.isfile=function(path){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 		exists(path)
 		.then(function(exist){
 			if(!exist) throw new Error('Not exists');
@@ -40,7 +42,8 @@ var isfile=exports.isfile=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - true/false
  */
 var issymlink=exports.symlink=function(path){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 		exists(path)
 		.then(function(exist){
 			if(!exist) throw new Error('Not exists');
@@ -61,7 +64,8 @@ var issymlink=exports.symlink=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - true/false
  */
 var isfolder=exports.isfolder=function(path){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 		exists(path)
 		.then(function(exist){
 			if(!exist) throw new Error('Not exists');
@@ -81,7 +85,8 @@ var isfolder=exports.isfolder=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - md5 указанного файла
  */
 var md5=exports.md5=function(path){
-	return new Promise(function(resolve, reject){
+	//-return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 		exists(path)
 		.then(function(exist){
 			if(!exist) throw new Error('Not exists');
@@ -116,7 +121,8 @@ var md5=exports.md5=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - true|false  в зависимости от результата проверки.
  */
 var exists=exports.exists=function(path){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 		fs.exists(path, resolve);
 	});
 };
@@ -127,7 +133,8 @@ var exists=exports.exists=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - объект stats
  */
 var stat=exports.stat=function(path){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 		fs.stat(path, getStdHandler(resolve, reject));
 	});
 };
@@ -140,10 +147,10 @@ var stat=exports.stat=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - путь к созданной папке
  */
 var mkdir=exports.mkdir=function(path){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 
 /*
-
 		var pth = require('path');
 		fs.mkdir(path, function(err) {
 			if(err){
@@ -191,7 +198,8 @@ var mkdir=exports.mkdir=function(path){
  * @return {promise}          Promise объект, resolve вызов которого получит результат - путь к созданному симлинку
  */
 var symlink=exports.symlink=function(filepath, linkpath){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(filepath, linkpath, resolve, reject){
 		fs.symlink(filepath, linkpath, function(err){
 			if(err){
 				reject(err);
@@ -209,7 +217,8 @@ var symlink=exports.symlink=function(filepath, linkpath){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - список удалённых элементов
  */
 var unlink=exports.unlink=function(path){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 		fs.unlink(path, function(err){
 			if(err){
 				reject(err);
@@ -227,7 +236,8 @@ var unlink=exports.unlink=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - список удалённых элементов
  */
 var rmdir=exports.rmdir=function(path){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 		readdir(path)
 		.then(
 			function(files){
@@ -262,7 +272,8 @@ var rmdir=exports.rmdir=function(path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - список удалённых элементов
  */
 var rm=exports.rm=function (path){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 		stat(path)
 		.then(
 			function(stats){
@@ -289,7 +300,8 @@ var rm=exports.rm=function (path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - список прочитанных элементов.
  */
 var readdir=exports.readdir=function (path){
-	return new Promise(function(resolve, reject){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
 		fs.readdir(path, getStdHandler(resolve, reject));
 	});
 };
@@ -301,7 +313,9 @@ var readdir=exports.readdir=function (path){
  * @return {promise}      Promise объект, resolve вызов которого получит результат - новое положение файла (dst).
  */
 var mv=exports.mv=function (src, dst){
-	return new Promise(function(resolve, reject){
+	//return new Promise(function(resolve, reject){
+	//-return cf.asy(arguments, function(src, dst, resolve, reject){
+	return cf.asy(arguments, function(src, dst, resolve, reject){
 		move(src, dst, {mkdirp: true}, getStdHandler(resolve, reject, dst));
 	});
 };

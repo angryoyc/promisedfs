@@ -167,6 +167,7 @@ describe('PromisedFS', function(){
 			pfs.readdir(dirpath)
 			.then(
 				function(ls){
+					//console.log(ls);
 					ls.should.type('object');
 					ls.length.should.type('number');
 					ls.length.should.equal(5);
