@@ -16,7 +16,7 @@ describe('PromisedFS', function(){
 	var filepath4 = __dirname + '/files/file4'
 	var filepath6 = __dirname + '/files/file6'
 	var filepath7 = __dirname + '/files/file7'
-	var symlink2 =  __dirname + '/files/symlink2';
+	var symlink2 =  dirpath2 + '/symlink2';
 
 
 	fs.createReadStream(filepath1).pipe(fs.createWriteStream(filepath3));
@@ -190,7 +190,7 @@ describe('PromisedFS', function(){
 					//console.log(ls);
 					ls.should.type('object');
 					ls.length.should.type('number');
-					ls.length.should.equal(6);
+					ls.length.should.equal(5);
 					done();
 				},
 				function(err){
