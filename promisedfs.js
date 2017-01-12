@@ -322,6 +322,19 @@ var mv=exports.mv=function (src, dst){
 
 
 /**
+ * Чтение симлинка
+ * @param  {string} path  Путь к ссылке
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - значение ссылки.
+ */
+var readsymlink=exports.readsymlink=function(path){
+	return cf.asy(arguments, function(path, resolve, reject){
+		fs.readlink(path, getStdHandler(resolve, reject));
+	});
+};
+
+
+
+/**
  * Получить стандартный обработчик. Стандартная фабрика для генерации стандартного обработчика вызовов fs
  * @param  {function} resolve  Callback, вызываемый в случае удачи.
  * @param  {function} reject   Callback, вызываемый в случае ошибки.
@@ -336,3 +349,5 @@ function getStdHandler(resolve, reject, res){
 		};
 	};
 };
+
+

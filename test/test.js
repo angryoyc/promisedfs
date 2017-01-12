@@ -16,6 +16,7 @@ describe('PromisedFS', function(){
 	var filepath4 = __dirname + '/files/file4'
 	var filepath6 = __dirname + '/files/file6'
 	var filepath7 = __dirname + '/files/file7'
+	var symlink2 =  __dirname + '/files/symlink2';
 
 
 	fs.createReadStream(filepath1).pipe(fs.createWriteStream(filepath3));
@@ -23,6 +24,25 @@ describe('PromisedFS', function(){
 	fs.createReadStream(filepath1).pipe(fs.createWriteStream(filepath6));
 	fs.mkdirSync(dirpath2);
 	fs.createReadStream(filepath1).pipe(fs.createWriteStream(dirpath2+'/file5'));
+	fs.symlinkSync(filepath1, symlink2);
+
+
+	describe('readsymlink', function(){
+		it('should return string answer for path ' + symlink2, function(done){
+			pfs.readsymlink(symlink2)
+			.then(
+				function(link){
+					console.log('[' + link + ']')
+					link.should.equal(filepath1);
+					done();
+				},
+				function(err){
+					return done(err);
+				}
+			)
+		})
+	});
+
 
 
 	describe('exists', function(){
@@ -170,7 +190,7 @@ describe('PromisedFS', function(){
 					//console.log(ls);
 					ls.should.type('object');
 					ls.length.should.type('number');
-					ls.length.should.equal(5);
+					ls.length.should.equal(6);
 					done();
 				},
 				function(err){
