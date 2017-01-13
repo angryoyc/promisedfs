@@ -16,7 +16,7 @@ describe('PromisedFS', function(){
 	var filepath4 = __dirname + '/files/file4'
 	var filepath6 = __dirname + '/files/file6'
 	var filepath7 = __dirname + '/files/file7'
-	var symlink2 =  dirpath2 + '/symlink2';
+	var symlink2 =  dirpath2 + 'symlink2';
 
 
 	fs.createReadStream(filepath1).pipe(fs.createWriteStream(filepath3));
@@ -27,26 +27,10 @@ describe('PromisedFS', function(){
 	fs.symlinkSync(filepath1, symlink2);
 
 
-	describe('readsymlink', function(){
-		it('should return string answer for path ' + symlink2, function(done){
-			pfs.readsymlink(symlink2)
-			.then(
-				function(link){
-					console.log('[' + link + ']')
-					link.should.equal(filepath1);
-					done();
-				},
-				function(err){
-					return done(err);
-				}
-			)
-		})
-	});
 
 
 
 	describe('exists', function(){
-
 		it('should return answer "true" for path ' + filepath1, function(done){
 			pfs.exists(filepath1)
 			.then(
@@ -75,12 +59,12 @@ describe('PromisedFS', function(){
 	});
 
 	describe('isfile', function(){
-		it('should return true for existing file path ' + filepath1, function(done){
+		it('should return fs.stats object for existing file path ' + filepath1, function(done){
 			pfs.isfile(filepath1)
 			.then(
 				function(res){
-					res.should.type('boolean');
-					res.should.equal(true);
+					res.should.type('object');
+					//res.should.equal(true);
 					done();
 				},
 				function(err){
@@ -120,12 +104,12 @@ describe('PromisedFS', function(){
 
 
 	describe('isfolder', function(){
-		it('should return true for existing folder path ' + dirpath, function(done){
+		it('should return fs.stats object for existing folder path ' + dirpath, function(done){
 			pfs.isfolder(dirpath)
 			.then(
 				function(res){
-					res.should.type('boolean');
-					res.should.equal(true);
+					res.should.type('object');
+					//res.should.equal(true);
 					done();
 				},
 				function(err){
@@ -164,10 +148,70 @@ describe('PromisedFS', function(){
 	});
 
 
+	describe('issymlink', function(){
+		it('should return fs.stats object for existing symlink path ' + symlink2, function(done){
+			pfs.issymlink(symlink2)
+			.then(
+				function(res){
+					res.should.type('object');
+					done();
+				},
+				function(err){
+					return done(err);
+				}
+			).catch(done);
+		})
+		it('should return error for existing file path ' + filepath1, function(done){
+			pfs.issymlink(filepath1)
+			.then(
+				function(res){
+					done(new Error('Path to file but not file and resolve function was called'));
+				},
+				function(err){
+					should.exist(err);
+					err.message.should.type('string');
+					err.message.should.equal("Not symlink");
+					return done();
+				}
+			).catch(done);
+		})
+		it('should return error for not existing folder ' + dirpath+'_notexists', function(done){
+			pfs.issymlink(dirpath+'_notexists')
+			.then(
+				function(res){
+					done(new Error('Path to not existing folder but resolve function was called'));
+				},
+				function(err){
+					should.exist(err);
+					err.message.should.type('string');
+					err.message.should.equal("Not exists");
+					return done();
+				}
+			).catch(done);
+		})
+	});
+
 
 	describe('stat', function(){
 		it('should return stats object with true size for path ' + filepath1, function(done){
 			pfs.stat(filepath1)
+			.then(
+				function(stats){
+					stats.should.type('object');
+					stats.size.should.type('number');
+					stats.size.should.equal(526);
+					done();
+				},
+				function(err){
+					return done(err);
+				}
+			).catch(done);
+		})
+	});
+
+	describe('lstat', function(){
+		it('should return stats object with true size for path ' + filepath1, function(done){
+			pfs.lstat(filepath1)
 			.then(
 				function(stats){
 					stats.should.type('object');
@@ -332,6 +376,22 @@ describe('PromisedFS', function(){
 			).catch(done);
 		})
 	});
+
+	describe('readsymlink', function(){
+		it('should return string answer for path ' + symlink2, function(done){
+			pfs.readsymlink(symlink2)
+			.then(
+				function(link){
+					link.should.equal(filepath1);
+					done();
+				},
+				function(err){
+					return done(err);
+				}
+			)
+		})
+	});
+
 
 	describe('unlink', function(){
 		it('should remove file and and return it path ' + filepath3, function(done){

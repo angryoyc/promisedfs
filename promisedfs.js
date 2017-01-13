@@ -29,7 +29,7 @@ var isfile=exports.isfile=function(path){
 		})
 		.then(function(stats){
 			if(!stats.isFile()) throw new Error('Not file');
-			return true;
+			return stats;
 		})
 		.then(resolve, reject).catch(reject);
 	});
@@ -41,7 +41,7 @@ var isfile=exports.isfile=function(path){
  * @param  {string} path  Предполагаемый путь к файлу
  * @return {promise}      Promise объект, resolve вызов которого получит результат - true/false
  */
-var issymlink=exports.symlink=function(path){
+var issymlink=exports.issymlink=function(path){
 	//- return new Promise(function(resolve, reject){
 	return cf.asy(arguments, function(path, resolve, reject){
 		exists(path)
@@ -73,7 +73,7 @@ var isfolder=exports.isfolder=function(path){
 		})
 		.then(function(stats){
 			if(!stats.isDirectory()) throw new Error('Not folder');
-			return true;
+			return stats;
 		})
 		.then(resolve, reject).catch(reject);
 	});
@@ -93,7 +93,7 @@ var md5=exports.md5=function(path){
 			return exist;
 		})
 		.then(function(exist){
-			return stat(path)
+			return stat(path);
 		})
 		.then(function(stats){
 			if(!stats.isFile()) throw new Error('Only files allowed');
@@ -136,6 +136,19 @@ var stat=exports.stat=function(path){
 	//- return new Promise(function(resolve, reject){
 	return cf.asy(arguments, function(path, resolve, reject){
 		fs.stat(path, getStdHandler(resolve, reject));
+	});
+};
+
+
+/**
+ * Сведения об элементе файловой системы
+ * @param  {string} path  Пусть к элементу файловой системы
+ * @return {promise}      Promise объект, resolve вызов которого получит результат - объект stats
+ */
+var lstat=exports.lstat=function(path){
+	//- return new Promise(function(resolve, reject){
+	return cf.asy(arguments, function(path, resolve, reject){
+		fs.lstat(path, getStdHandler(resolve, reject));
 	});
 };
 
