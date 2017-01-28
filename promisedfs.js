@@ -287,7 +287,7 @@ var rmdir=exports.rmdir=function(path){
 var rm=exports.rm=function (path){
 	//- return new Promise(function(resolve, reject){
 	return cf.asy(arguments, function(path, resolve, reject){
-		stat(path)
+		lstat(path)
 		.then(
 			function(stats){
 				if(stats.isDirectory()){
